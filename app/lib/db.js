@@ -1,13 +1,13 @@
 import { neon } from "@neondatabase/serverless";
 
 export function getSQL() {
-  return neon(process.env.DATABASE_URL);
+    return neon(process.env.DATABASE_URL);
 }
 
 export async function initDB() {
-  const sql = getSQL();
+    const sql = getSQL();
 
-  await sql`
+    await sql`
     CREATE TABLE IF NOT EXISTS book (
       id SERIAL PRIMARY KEY,
       title TEXT DEFAULT 'Nuestros Recuerdos',
@@ -18,13 +18,14 @@ export async function initDB() {
     )
   `;
 
-  await sql`
+    await sql`
     CREATE TABLE IF NOT EXISTS entries (
       id SERIAL PRIMARY KEY,
       book_id INTEGER DEFAULT 1,
       chapter_order INTEGER NOT NULL,
       photo_url TEXT DEFAULT '',
       caption TEXT DEFAULT '',
+      description TEXT DEFAULT '',
       title TEXT DEFAULT '',
       body TEXT DEFAULT '',
       date_text TEXT DEFAULT '',
@@ -33,11 +34,11 @@ export async function initDB() {
     )
   `;
 
-  // Ensure there's at least one book
-  const books = await sql`SELECT id FROM book LIMIT 1`;
-  if (books.length === 0) {
-    await sql`INSERT INTO book (title, subtitle, dedication) VALUES ('Nuestros Recuerdos', 'Un viaje a través del tiempo', '')`;
-  }
+    // Ensure there's at least one book
+    const books = await sql`SELECT id FROM book LIMIT 1`;
+    if (books.length === 0) {
+        await sql`INSERT INTO book (title, subtitle, dedication) VALUES ('Nuestros Recuerdos', 'Un viaje a través del tiempo', '')`;
+    }
 
-  return sql;
+    return sql;
 }

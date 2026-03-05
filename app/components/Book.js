@@ -270,6 +270,14 @@ export default function Book() {
                                 onBlur={e => handleEntryChange(entry.id, "caption", e.target.value)}
                             />
                         </div>
+                        <div className="photo-description">
+                            <textarea
+                                defaultValue={entry.description || ""}
+                                placeholder="Pequeña descripción de este momento..."
+                                onClick={e => e.stopPropagation()}
+                                onBlur={e => handleEntryChange(entry.id, "description", e.target.value)}
+                            />
+                        </div>
                     </div>
                 ),
                 back: (

@@ -8,11 +8,12 @@ export async function PUT(request, { params }) {
         const { id } = await params;
         const data = await request.json();
 
-        const { caption, title, body, date_text, photo_url } = data;
+        const { caption, description, title, body, date_text, photo_url } = data;
 
         await sql`
       UPDATE entries SET
         caption = COALESCE(${caption ?? null}, caption),
+        description = COALESCE(${description ?? null}, description),
         title = COALESCE(${title ?? null}, title),
         body = COALESCE(${body ?? null}, body),
         date_text = COALESCE(${date_text ?? null}, date_text),
