@@ -814,6 +814,8 @@ body {
 }
 
 /* ═══ RESPONSIVE ═══ */
+
+/* Tablet */
 @media (max-width: 960px) {
   :root {
     --book-w: 96vw;
@@ -838,40 +840,241 @@ body {
   }
 
   .nav button {
-    width: 38px;
-    height: 38px;
+    width: 40px;
+    height: 40px;
     font-size: 1rem;
   }
 }
 
-@media (max-width: 600px) {
+/* Mobile — single page mode */
+@media (max-width: 768px) {
   :root {
-    --book-h: 75vh;
+    --book-w: 88vw;
+    --book-h: 72vh;
+    --page-w: 88vw;
+  }
+
+  body {
+    justify-content: flex-start;
+    padding-top: 15px;
+    overflow-y: auto;
+  }
+
+  .title-section {
+    margin-bottom: 12px;
+  }
+
+  .title-section h1 {
+    font-size: 2rem;
+  }
+
+  .title-section .sub {
+    font-size: .7rem;
+    letter-spacing: 4px;
+  }
+
+  /* Hide left cover — single page view */
+  .left-cover {
+    display: none;
+  }
+
+  /* Remove spine shadow */
+  .book::before {
+    display: none;
+  }
+
+  /* Book is single-page container */
+  .book {
+    width: var(--book-w);
+    height: var(--book-h);
+  }
+
+  /* Pages take full book width */
+  .page {
+    width: 100%;
+    right: 0;
+  }
+
+  .page-front {
+    border-radius: 12px;
+  }
+
+  .page-back {
+    border-radius: 12px;
   }
 
   .pg-content {
-    padding: 20px 18px;
+    padding: 25px 22px;
   }
 
+  /* Cover */
   .pg-cover h2 {
-    font-size: 1.8rem;
+    font-size: 2rem;
   }
 
+  .pg-cover .orn {
+    font-size: 1.2rem;
+    letter-spacing: 6px;
+  }
+
+  /* Dedication */
+  .pg-dedication textarea {
+    font-size: .9rem;
+    width: 95%;
+  }
+
+  .pg-dedication .quote-mark {
+    font-size: 3.5rem;
+  }
+
+  /* Photo page */
   .pg-entry .photo-zone {
-    height: 130px;
+    height: 200px;
+    margin-bottom: 10px;
   }
 
+  .pg-entry .entry-header {
+    margin-bottom: 8px;
+    font-size: .65rem;
+  }
+
+  .pg-entry .photo-caption input {
+    font-size: .9rem;
+  }
+
+  .pg-entry .photo-description textarea {
+    font-size: .75rem;
+    max-height: 60px;
+  }
+
+  /* Text page */
   .pg-text .entry-title {
-    font-size: 1.1rem;
+    font-size: 1.2rem;
   }
 
   .pg-text .entry-body {
-    font-size: .85rem;
-    min-height: 100px;
+    font-size: .88rem;
+    min-height: 120px;
+    line-height: 1.7;
+  }
+
+  .pg-text .entry-header {
+    font-size: .65rem;
+  }
+
+  /* Navigation */
+  .nav-left {
+    left: 4px;
+  }
+
+  .nav-right {
+    right: 4px;
+  }
+
+  .nav button {
+    width: 36px;
+    height: 36px;
+    font-size: .9rem;
+    background: rgba(44, 26, 46, .85);
+  }
+
+  /* Page indicator */
+  .page-indicator {
+    bottom: 15px;
+    padding: 7px 14px;
+    gap: 6px;
+  }
+
+  .page-indicator .dot {
+    width: 7px;
+    height: 7px;
+  }
+
+  /* Add button */
+  .add-btn {
+    bottom: 14px;
+    right: 12px;
+    padding: 9px 14px;
+    font-size: .65rem;
+    letter-spacing: 1px;
+  }
+
+  /* Save indicator */
+  .save-indicator {
+    top: 10px;
+    right: 10px;
+    font-size: .65rem;
+    padding: 5px 12px;
+  }
+
+  /* End page */
+  .pg-end .fin {
+    font-size: 2rem;
+  }
+
+  .pg-end .orn {
+    font-size: 1rem;
+    letter-spacing: 8px;
+  }
+
+  /* Page numbers */
+  .pg-num {
+    font-size: .6rem;
+    bottom: 10px;
+  }
+
+  .page-front .pg-num {
+    right: 15px;
+  }
+
+  .page-back .pg-num {
+    left: 15px;
+  }
+}
+
+/* Small phones */
+@media (max-width: 400px) {
+  :root {
+    --book-h: 68vh;
+  }
+
+  .title-section h1 {
+    font-size: 1.7rem;
+  }
+
+  .title-section .sub {
+    font-size: .6rem;
+  }
+
+  .pg-content {
+    padding: 18px 16px;
+  }
+
+  .pg-cover h2 {
+    font-size: 1.6rem;
+  }
+
+  .pg-entry .photo-zone {
+    height: 150px;
+  }
+
+  .pg-text .entry-title {
+    font-size: 1.05rem;
+  }
+
+  .pg-text .entry-body {
+    font-size: .82rem;
+    min-height: 90px;
+  }
+
+  .nav button {
+    width: 32px;
+    height: 32px;
+    font-size: .8rem;
   }
 
   .add-btn {
-    padding: 10px 16px;
-    font-size: .7rem;
+    padding: 8px 10px;
+    font-size: .6rem;
   }
 }
