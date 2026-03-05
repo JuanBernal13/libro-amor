@@ -32,7 +32,12 @@ export async function initDB() {
       created_at TIMESTAMP DEFAULT NOW(),
       updated_at TIMESTAMP DEFAULT NOW()
     )
-  `;
+   `;
+
+    // Migrations: add new columns to existing tables
+    await sql`
+      ALTER TABLE entries ADD COLUMN IF NOT EXISTS description TEXT DEFAULT ''
+    `;
 
     // Ensure there's at least one book
     const books = await sql`SELECT id FROM book LIMIT 1`;
