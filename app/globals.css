@@ -333,7 +333,7 @@ body {
 
 .pg-entry .photo-zone {
   width: 100%;
-  height: 190px;
+  height: 280px;
   position: relative;
   margin-bottom: 15px;
 }
@@ -887,7 +887,7 @@ body {
   }
 
   .pg-entry .photo-zone {
-    height: 160px;
+    height: 220px;
   }
 
   .nav-left {
@@ -988,7 +988,7 @@ body {
 
   /* Photo page */
   .pg-entry .photo-zone {
-    height: 200px;
+    height: 260px;
     margin-bottom: 10px;
   }
 
@@ -1114,7 +1114,7 @@ body {
   }
 
   .pg-entry .photo-zone {
-    height: 150px;
+    height: 200px;
   }
 
   .pg-text .entry-title {
