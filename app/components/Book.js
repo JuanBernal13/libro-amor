@@ -1,21 +1,50 @@
 "use client";
 
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef, useCallback, Suspense } from "react";
+import { useSearchParams } from "next/navigation";
 
 const ROMAN = ["I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X",
     "XI", "XII", "XIII", "XIV", "XV", "XVI", "XVII", "XVIII", "XIX", "XX"];
 
-export default function Book() {
+function BookInner() {
+    const searchParams = useSearchParams();
     const [book, setBook] = useState(null);
     const [entries, setEntries] = useState([]);
     const [currentPage, setCurrentPage] = useState(0);
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
     const [lightboxSrc, setLightboxSrc] = useState(null);
-    const [uploading, setUploading] = useState(null); // entry id being uploaded
+    const [uploading, setUploading] = useState(null);
+    const [editMode, setEditMode] = useState(false);
+    const [editKey, setEditKey] = useState("");
 
     const saveTimerRef = useRef(null);
     const fileInputRefs = useRef({});
+
+    // ── Check edit mode ──
+    useEffect(() => {
+        const key = searchParams.get("edit");
+        if (key) {
+            setEditKey(key);
+            // Verify the key with the server
+            fetch("/api/verify", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ key }),
+            })
+                .then(r => r.json())
+                .then(data => setEditMode(data.valid))
+                .catch(() => setEditMode(false));
+        }
+    }, [searchParams]);
+
+    // ── Helper: auth headers ──
+    function authHeaders() {
+        return {
+            "Content-Type": "application/json",
+            "x-edit-key": editKey,
+        };
+    }
 
     // ── Load data ──
     useEffect(() => {
@@ -31,7 +60,6 @@ export default function Book() {
             setEntries(data.entries || []);
         } catch (err) {
             console.error("Error loading:", err);
-            // If DB not initialized, try init
             try {
                 await fetch("/api/init");
                 const res = await fetch("/api/book");
@@ -40,7 +68,6 @@ export default function Book() {
                 setEntries(data.entries || []);
             } catch (e) {
                 console.error("Init error:", e);
-                // Fallback: work offline
                 setBook({ id: 1, title: "Nuestros Recuerdos", subtitle: "Un viaje a través del tiempo", dedication: "" });
                 setEntries([]);
             }
@@ -51,38 +78,41 @@ export default function Book() {
 
     // ── Auto-save book metadata ──
     const saveBook = useCallback((updatedBook) => {
+        if (!editMode) return;
         clearTimeout(saveTimerRef.current);
         saveTimerRef.current = setTimeout(async () => {
             setSaving(true);
             try {
                 await fetch("/api/book", {
                     method: "PUT",
-                    headers: { "Content-Type": "application/json" },
+                    headers: authHeaders(),
                     body: JSON.stringify(updatedBook),
                 });
             } catch (e) { console.error(e); }
             setTimeout(() => setSaving(false), 800);
         }, 1000);
-    }, []);
+    }, [editMode, editKey]);
 
     // ── Auto-save entry ──
     const saveEntry = useCallback((id, field, value) => {
+        if (!editMode) return;
         clearTimeout(saveTimerRef.current);
         saveTimerRef.current = setTimeout(async () => {
             setSaving(true);
             try {
                 await fetch(`/api/entries/${id}`, {
                     method: "PUT",
-                    headers: { "Content-Type": "application/json" },
+                    headers: authHeaders(),
                     body: JSON.stringify({ [field]: value }),
                 });
             } catch (e) { console.error(e); }
             setTimeout(() => setSaving(false), 800);
         }, 1000);
-    }, []);
+    }, [editMode, editKey]);
 
     // ── Update book field ──
     function handleBookChange(field, value) {
+        if (!editMode) return;
         const updated = { ...book, [field]: value };
         setBook(updated);
         saveBook(updated);
@@ -90,24 +120,29 @@ export default function Book() {
 
     // ── Update entry field ──
     function handleEntryChange(id, field, value) {
+        if (!editMode) return;
         setEntries(prev => prev.map(e => e.id === id ? { ...e, [field]: value } : e));
         saveEntry(id, field, value);
     }
 
     // ── Upload image ──
     async function handleImageUpload(entryId, file) {
-        if (!file) return;
+        if (!file || !editMode) return;
         setUploading(entryId);
         try {
             const formData = new FormData();
             formData.append("file", file);
-            const res = await fetch("/api/upload", { method: "POST", body: formData });
+            const res = await fetch("/api/upload", {
+                method: "POST",
+                headers: { "x-edit-key": editKey },
+                body: formData,
+            });
             const data = await res.json();
             if (data.url) {
                 setEntries(prev => prev.map(e => e.id === entryId ? { ...e, photo_url: data.url } : e));
                 await fetch(`/api/entries/${entryId}`, {
                     method: "PUT",
-                    headers: { "Content-Type": "application/json" },
+                    headers: authHeaders(),
                     body: JSON.stringify({ photo_url: data.url }),
                 });
             }
@@ -119,17 +154,17 @@ export default function Book() {
 
     // ── Add new entry ──
     async function addEntry() {
+        if (!editMode) return;
         setSaving(true);
         try {
             const res = await fetch("/api/entries", {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
+                headers: authHeaders(),
                 body: JSON.stringify({ book_id: book?.id || 1 }),
             });
             const newEntry = await res.json();
             setEntries(prev => [...prev, newEntry]);
-            // Navigate to the new entry's page
-            setCurrentPage(entries.length + 1); // +1 for cover leaf
+            setCurrentPage(entries.length + 1);
         } catch (e) {
             console.error("Add error:", e);
         }
@@ -137,7 +172,7 @@ export default function Book() {
     }
 
     // ── Navigation ──
-    const totalLeaves = entries.length + 2; // cover + entries + end
+    const totalLeaves = entries.length + 2;
 
     function nextPage() {
         if (currentPage < totalLeaves) setCurrentPage(p => p + 1);
@@ -176,48 +211,62 @@ export default function Book() {
         }
     }, []);
 
-    // ── Build leaves ──
+    // ══════════════════════════════════════
+    //  BUILD LEAVES — edit vs read-only
+    // ══════════════════════════════════════
     function buildLeaves() {
         const leaves = [];
 
-        // Leaf 0: Cover / Dedication
+        // LEAF 0: Cover / Dedication
         leaves.push({
             front: (
                 <div className="pg-content pg-cover">
                     <div className="orn">✦ ✧ ✦</div>
-                    <h2
-                        contentEditable
-                        suppressContentEditableWarning
-                        onBlur={e => handleBookChange("title", e.target.textContent)}
-                        onClick={e => e.stopPropagation()}
-                    >{book?.title || "Nuestros Recuerdos"}</h2>
+                    {editMode ? (
+                        <h2
+                            contentEditable
+                            suppressContentEditableWarning
+                            onBlur={e => handleBookChange("title", e.target.textContent)}
+                            onClick={e => e.stopPropagation()}
+                        >{book?.title || "Nuestros Recuerdos"}</h2>
+                    ) : (
+                        <h2>{book?.title || "Nuestros Recuerdos"}</h2>
+                    )}
                     <div className="line"></div>
-                    <p
-                        className="date-text"
-                        contentEditable
-                        suppressContentEditableWarning
-                        onBlur={e => handleBookChange("subtitle", e.target.textContent)}
-                        onClick={e => e.stopPropagation()}
-                    >{book?.subtitle || "Un viaje a través del tiempo"}</p>
+                    {editMode ? (
+                        <p
+                            className="date-text"
+                            contentEditable
+                            suppressContentEditableWarning
+                            onBlur={e => handleBookChange("subtitle", e.target.textContent)}
+                            onClick={e => e.stopPropagation()}
+                        >{book?.subtitle || "Un viaje a través del tiempo"}</p>
+                    ) : (
+                        <p className="date-text">{book?.subtitle || "Un viaje a través del tiempo"}</p>
+                    )}
                     <div className="orn" style={{ marginTop: "16px" }}>✦ ✧ ✦</div>
                 </div>
             ),
             back: (
                 <div className="pg-content pg-dedication">
                     <div className="quote-mark">&ldquo;</div>
-                    <textarea
-                        defaultValue={book?.dedication || ""}
-                        placeholder="Escribe aquí una dedicatoria especial..."
-                        rows={4}
-                        onClick={e => e.stopPropagation()}
-                        onBlur={e => handleBookChange("dedication", e.target.value)}
-                    />
+                    {editMode ? (
+                        <textarea
+                            defaultValue={book?.dedication || ""}
+                            placeholder="Escribe aquí una dedicatoria especial..."
+                            rows={4}
+                            onClick={e => e.stopPropagation()}
+                            onBlur={e => handleBookChange("dedication", e.target.value)}
+                        />
+                    ) : (
+                        <p className="readonly-dedication">{book?.dedication || ""}</p>
+                    )}
                     <div className="ded-line"></div>
                 </div>
             )
         });
 
-        // Entry leaves
+        // ENTRY LEAVES
         entries.forEach((entry, i) => {
             leaves.push({
                 front: (
@@ -236,11 +285,12 @@ export default function Book() {
                                         alt="Foto"
                                         onClick={e => { e.stopPropagation(); setLightboxSrc(entry.photo_url); }}
                                         onDoubleClick={e => {
+                                            if (!editMode) return;
                                             e.stopPropagation();
                                             fileInputRefs.current[entry.id]?.click();
                                         }}
                                     />
-                                ) : (
+                                ) : editMode ? (
                                     <div
                                         className="photo-placeholder"
                                         onClick={e => {
@@ -251,62 +301,89 @@ export default function Book() {
                                         <span className="ph-icon">📷</span>
                                         <span className="ph-label">Añadir foto</span>
                                     </div>
+                                ) : (
+                                    <div className="photo-placeholder">
+                                        <span className="ph-icon">🌸</span>
+                                        <span className="ph-label">Sin foto</span>
+                                    </div>
                                 )}
-                                <input
-                                    type="file"
-                                    className="hidden-input"
-                                    accept="image/*"
-                                    ref={el => { fileInputRefs.current[entry.id] = el; }}
-                                    onChange={e => handleImageUpload(entry.id, e.target.files[0])}
-                                />
+                                {editMode && (
+                                    <input
+                                        type="file"
+                                        className="hidden-input"
+                                        accept="image/*"
+                                        ref={el => { fileInputRefs.current[entry.id] = el; }}
+                                        onChange={e => handleImageUpload(entry.id, e.target.files[0])}
+                                    />
+                                )}
                             </div>
                         </div>
                         <div className="photo-caption">
-                            <input
-                                type="text"
-                                defaultValue={entry.caption || ""}
-                                placeholder="Pie de foto..."
-                                onClick={e => e.stopPropagation()}
-                                onBlur={e => handleEntryChange(entry.id, "caption", e.target.value)}
-                            />
+                            {editMode ? (
+                                <input
+                                    type="text"
+                                    defaultValue={entry.caption || ""}
+                                    placeholder="Pie de foto..."
+                                    onClick={e => e.stopPropagation()}
+                                    onBlur={e => handleEntryChange(entry.id, "caption", e.target.value)}
+                                />
+                            ) : (
+                                entry.caption && <span className="readonly-caption">{entry.caption}</span>
+                            )}
                         </div>
                         <div className="photo-description">
-                            <textarea
-                                defaultValue={entry.description || ""}
-                                placeholder="Pequeña descripción de este momento..."
-                                onClick={e => e.stopPropagation()}
-                                onBlur={e => handleEntryChange(entry.id, "description", e.target.value)}
-                            />
+                            {editMode ? (
+                                <textarea
+                                    defaultValue={entry.description || ""}
+                                    placeholder="Pequeña descripción de este momento..."
+                                    onClick={e => e.stopPropagation()}
+                                    onBlur={e => handleEntryChange(entry.id, "description", e.target.value)}
+                                />
+                            ) : (
+                                entry.description && <p className="readonly-description">{entry.description}</p>
+                            )}
                         </div>
                     </div>
                 ),
                 back: (
                     <div className="pg-content pg-text">
                         <div className="entry-header">Capítulo {ROMAN[i] || i + 1}</div>
-                        <input
-                            className="entry-title"
-                            type="text"
-                            defaultValue={entry.title || ""}
-                            placeholder="Título del momento..."
-                            onClick={e => e.stopPropagation()}
-                            onBlur={e => handleEntryChange(entry.id, "title", e.target.value)}
-                        />
-                        <textarea
-                            className="entry-body"
-                            defaultValue={entry.body || ""}
-                            placeholder="Escribe aquí tu recuerdo, lo que sentiste, lo que viviste en ese instante..."
-                            onClick={e => e.stopPropagation()}
-                            onBlur={e => handleEntryChange(entry.id, "body", e.target.value)}
-                        />
+                        {editMode ? (
+                            <input
+                                className="entry-title"
+                                type="text"
+                                defaultValue={entry.title || ""}
+                                placeholder="Título del momento..."
+                                onClick={e => e.stopPropagation()}
+                                onBlur={e => handleEntryChange(entry.id, "title", e.target.value)}
+                            />
+                        ) : (
+                            entry.title && <h3 className="readonly-title">{entry.title}</h3>
+                        )}
+                        {editMode ? (
+                            <textarea
+                                className="entry-body"
+                                defaultValue={entry.body || ""}
+                                placeholder="Escribe aquí tu recuerdo, lo que sentiste, lo que viviste en ese instante..."
+                                onClick={e => e.stopPropagation()}
+                                onBlur={e => handleEntryChange(entry.id, "body", e.target.value)}
+                            />
+                        ) : (
+                            <p className="readonly-body">{entry.body || ""}</p>
+                        )}
                         <div className="entry-date">
                             <span className="orn">✧</span>
-                            <input
-                                type="text"
-                                defaultValue={entry.date_text || ""}
-                                placeholder="Fecha o lugar..."
-                                onClick={e => e.stopPropagation()}
-                                onBlur={e => handleEntryChange(entry.id, "date_text", e.target.value)}
-                            />
+                            {editMode ? (
+                                <input
+                                    type="text"
+                                    defaultValue={entry.date_text || ""}
+                                    placeholder="Fecha o lugar..."
+                                    onClick={e => e.stopPropagation()}
+                                    onBlur={e => handleEntryChange(entry.id, "date_text", e.target.value)}
+                                />
+                            ) : (
+                                entry.date_text && <span className="readonly-date">{entry.date_text}</span>
+                            )}
                         </div>
                     </div>
                 )
@@ -351,13 +428,17 @@ export default function Book() {
 
             <div className="title-section">
                 <h1>Nuestro Libro</h1>
-                <p className="sub">Pasa las páginas ✦</p>
+                <p className="sub">
+                    {editMode ? "✎ Modo edición" : "Pasa las páginas ✦"}
+                </p>
             </div>
 
-            {/* Save indicator */}
-            <div className={`save-indicator ${saving ? "saving" : "saved"}`}>
-                {saving ? "✎ Guardando..." : "✓ Guardado"}
-            </div>
+            {/* Save indicator — only in edit mode */}
+            {editMode && (
+                <div className={`save-indicator ${saving ? "saving" : "saved"}`}>
+                    {saving ? "✎ Guardando..." : "✓ Guardado"}
+                </div>
+            )}
 
             <div className="book-scene">
                 <div className="book">
@@ -409,10 +490,12 @@ export default function Book() {
                 ))}
             </div>
 
-            {/* Add page */}
-            <button className="add-btn" onClick={addEntry} disabled={saving}>
-                <span className="plus">+</span> Nueva página
-            </button>
+            {/* Add page — only in edit mode */}
+            {editMode && (
+                <button className="add-btn" onClick={addEntry} disabled={saving}>
+                    <span className="plus">+</span> Nueva página
+                </button>
+            )}
 
             {/* Lightbox */}
             {lightboxSrc && (
@@ -422,5 +505,19 @@ export default function Book() {
                 </div>
             )}
         </>
+    );
+}
+
+// Wrap in Suspense because useSearchParams needs it
+export default function Book() {
+    return (
+        <Suspense fallback={
+            <div className="loading-screen">
+                <div className="spinner"></div>
+                <p>Abriendo el libro...</p>
+            </div>
+        }>
+            <BookInner />
+        </Suspense>
     );
 }

@@ -1,8 +1,10 @@
 import { getSQL } from "@/app/lib/db";
+import { validateEditKey, unauthorizedResponse } from "@/app/lib/auth";
 import { NextResponse } from "next/server";
 
 // POST /api/entries — create new entry
 export async function POST(request) {
+    if (!validateEditKey(request)) return unauthorizedResponse();
     try {
         const sql = getSQL();
         const { book_id = 1 } = await request.json();

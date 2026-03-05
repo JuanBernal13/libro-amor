@@ -813,6 +813,65 @@ body {
   opacity: .5;
 }
 
+/* ═══ READ-ONLY STYLES ═══ */
+.readonly-dedication {
+  font-family: 'Playfair Display', serif;
+  font-style: italic;
+  font-size: 1rem;
+  color: var(--wine);
+  text-align: center;
+  line-height: 1.9;
+  width: 90%;
+  white-space: pre-wrap;
+}
+
+.readonly-caption {
+  font-family: 'Great Vibes', cursive;
+  font-size: 1rem;
+  color: var(--dusty-rose);
+  text-align: center;
+  display: block;
+  padding: 6px 0;
+  margin-top: 5px;
+}
+
+.readonly-description {
+  font-family: 'Lora', serif;
+  font-style: italic;
+  font-size: .78rem;
+  color: var(--warm-gray);
+  line-height: 1.6;
+  border-left: 2px solid rgba(201, 169, 110, .25);
+  padding: 4px 0 4px 10px;
+  margin-top: 6px;
+  white-space: pre-wrap;
+}
+
+.readonly-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.35rem;
+  color: var(--wine);
+  margin-bottom: 8px;
+  line-height: 1.4;
+  font-weight: 600;
+}
+
+.readonly-body {
+  font-family: 'Lora', serif;
+  font-size: .92rem;
+  color: var(--warm-gray);
+  line-height: 1.9;
+  flex: 1;
+  white-space: pre-wrap;
+}
+
+.readonly-date {
+  font-family: 'Playfair Display', serif;
+  font-style: italic;
+  font-size: .78rem;
+  color: var(--dusty-rose);
+}
+
 /* ═══ RESPONSIVE ═══ */
 
 /* Tablet */
