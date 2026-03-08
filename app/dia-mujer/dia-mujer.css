@@ -1,0 +1,614 @@
+@import url('https://fonts.googleapis.com/css2?family=Great+Vibes&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Lora:ital,wght@0,400;0,500;1,400;1,500&display=swap');
+
+/* ═══════════════════════════════════════════
+   DÍA DE LA MUJER — PÁGINA ESPECIAL
+   ═══════════════════════════════════════════ */
+
+.dm-container {
+    position: relative;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    font-family: 'Lora', serif;
+}
+
+/* ═══ ANIMATED BACKGROUND ═══ */
+.dm-bg-gradient {
+    position: fixed;
+    inset: 0;
+    background: linear-gradient(135deg,
+            #1a0a1e 0%,
+            #2d1233 20%,
+            #1e0f2a 40%,
+            #2a1030 60%,
+            #150820 80%,
+            #1a0a1e 100%);
+    background-size: 400% 400%;
+    animation: dm-gradientShift 15s ease infinite;
+    z-index: 0;
+}
+
+.dm-bg-gradient::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+        radial-gradient(ellipse at 20% 50%, rgba(180, 60, 100, 0.12) 0%, transparent 60%),
+        radial-gradient(ellipse at 80% 20%, rgba(201, 169, 110, 0.08) 0%, transparent 50%),
+        radial-gradient(ellipse at 50% 80%, rgba(212, 100, 140, 0.1) 0%, transparent 50%);
+    animation: dm-auroraMove 20s ease-in-out infinite alternate;
+}
+
+@keyframes dm-gradientShift {
+
+    0%,
+    100% {
+        background-position: 0% 50%;
+    }
+
+    50% {
+        background-position: 100% 50%;
+    }
+}
+
+@keyframes dm-auroraMove {
+    0% {
+        opacity: 0.7;
+        transform: scale(1);
+    }
+
+    50% {
+        opacity: 1;
+        transform: scale(1.05);
+    }
+
+    100% {
+        opacity: 0.8;
+        transform: scale(1.02);
+    }
+}
+
+/* ═══ FLOATING HEARTS ═══ */
+.dm-hearts-layer {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 1;
+    overflow: hidden;
+}
+
+.dm-floating-heart {
+    position: absolute;
+    bottom: -50px;
+    color: rgba(220, 80, 120, 0.5);
+    text-shadow: 0 0 15px rgba(220, 80, 120, 0.3);
+    animation: dm-floatHeart linear infinite;
+    filter: blur(0.5px);
+}
+
+@keyframes dm-floatHeart {
+    0% {
+        transform: translateY(0) translateX(0) rotate(0deg) scale(0.5);
+        opacity: 0;
+    }
+
+    10% {
+        opacity: 1;
+    }
+
+    50% {
+        transform: translateY(-50vh) translateX(30px) rotate(180deg) scale(1);
+    }
+
+    90% {
+        opacity: 0.8;
+    }
+
+    100% {
+        transform: translateY(-110vh) translateX(-20px) rotate(360deg) scale(0.6);
+        opacity: 0;
+    }
+}
+
+/* ═══ SPARKLE PARTICLES ═══ */
+.dm-sparkles-layer {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 1;
+    overflow: hidden;
+}
+
+.dm-sparkle {
+    position: absolute;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(255, 215, 140, 0.9), rgba(201, 169, 110, 0.3), transparent);
+    animation: dm-twinkle ease-in-out infinite;
+    box-shadow: 0 0 6px rgba(255, 215, 140, 0.4);
+}
+
+@keyframes dm-twinkle {
+
+    0%,
+    100% {
+        opacity: 0;
+        transform: scale(0);
+    }
+
+    50% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* ═══ FALLING PETALS ═══ */
+.dm-petals-layer {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 1;
+    overflow: hidden;
+}
+
+.dm-petal {
+    position: absolute;
+    top: -30px;
+    border-radius: 50% 0 50% 50%;
+    background: linear-gradient(135deg, rgba(240, 150, 170, 0.4), rgba(245, 200, 210, 0.2));
+    animation: dm-fallPetal linear infinite;
+    filter: blur(0.3px);
+}
+
+@keyframes dm-fallPetal {
+    0% {
+        transform: translateY(0) translateX(0) rotate(0deg);
+        opacity: 0;
+    }
+
+    10% {
+        opacity: 0.7;
+    }
+
+    100% {
+        transform: translateY(110vh) translateX(80px) rotate(720deg);
+        opacity: 0;
+    }
+}
+
+/* ═══ MAIN CONTENT ═══ */
+.dm-content {
+    position: relative;
+    z-index: 10;
+    max-width: 500px;
+    width: 90%;
+    padding: 45px 35px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    background: rgba(30, 15, 35, 0.45);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(201, 169, 110, 0.15);
+    border-radius: 24px;
+    box-shadow:
+        0 25px 80px rgba(0, 0, 0, 0.4),
+        inset 0 1px 0 rgba(255, 255, 255, 0.05),
+        0 0 100px rgba(180, 60, 100, 0.08);
+    opacity: 0;
+    transform: translateY(30px) scale(0.95);
+    transition: all 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.dm-content.dm-visible {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+}
+
+/* ═══ ORNAMENTS ═══ */
+.dm-ornament-top,
+.dm-ornament-bottom {
+    font-size: 0.85rem;
+    color: rgba(201, 169, 110, 0.35);
+    letter-spacing: 12px;
+    margin: 5px 0;
+}
+
+.dm-ornament-bottom {
+    margin-top: 10px;
+}
+
+/* ═══ DATE BADGE ═══ */
+.dm-date-badge {
+    margin: 12px 0 18px;
+    padding: 6px 20px;
+    border: 1px solid rgba(201, 169, 110, 0.25);
+    border-radius: 30px;
+    background: linear-gradient(135deg, rgba(201, 169, 110, 0.08), rgba(180, 60, 100, 0.05));
+}
+
+.dm-date-badge span {
+    font-family: 'Playfair Display', serif;
+    font-size: 0.72rem;
+    color: rgba(232, 213, 163, 0.7);
+    letter-spacing: 5px;
+    text-transform: uppercase;
+}
+
+/* ═══ FLOWER FRAME ═══ */
+.dm-flower-frame {
+    position: relative;
+    width: 220px;
+    height: 220px;
+    margin: 10px 0 20px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 3px solid rgba(201, 169, 110, 0.25);
+    box-shadow:
+        0 10px 40px rgba(0, 0, 0, 0.3),
+        inset 0 0 30px rgba(180, 60, 100, 0.1),
+        0 0 60px rgba(180, 60, 100, 0.1);
+    animation: dm-floatImage 6s ease-in-out infinite;
+}
+
+.dm-flower-frame img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: saturate(1.1) brightness(0.95);
+    transition: transform 0.6s ease;
+}
+
+.dm-flower-frame:hover img {
+    transform: scale(1.08);
+}
+
+.dm-flower-glow {
+    position: absolute;
+    inset: -20px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(220, 80, 120, 0.15), transparent 70%);
+    animation: dm-pulseGlow 3s ease-in-out infinite alternate;
+    pointer-events: none;
+}
+
+@keyframes dm-floatImage {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-8px);
+    }
+}
+
+@keyframes dm-pulseGlow {
+    0% {
+        opacity: 0.5;
+        transform: scale(0.95);
+    }
+
+    100% {
+        opacity: 1;
+        transform: scale(1.1);
+    }
+}
+
+/* ═══ TITLE ═══ */
+.dm-title {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 5px 0 15px;
+}
+
+.dm-title-line1 {
+    font-family: 'Great Vibes', cursive;
+    font-size: 3.2rem;
+    font-weight: 400;
+    color: rgba(232, 213, 163, 0.95);
+    text-shadow:
+        0 2px 20px rgba(201, 169, 110, 0.4),
+        0 0 60px rgba(201, 169, 110, 0.15);
+    line-height: 1.1;
+    animation: dm-glowText 3s ease-in-out infinite alternate;
+}
+
+.dm-title-line2 {
+    font-family: 'Great Vibes', cursive;
+    font-size: 2.5rem;
+    font-weight: 400;
+    color: rgba(240, 160, 180, 0.9);
+    text-shadow:
+        0 2px 20px rgba(220, 80, 120, 0.3),
+        0 0 40px rgba(220, 80, 120, 0.1);
+    line-height: 1.2;
+    margin-top: -5px;
+    animation: dm-glowText 3s ease-in-out infinite alternate-reverse;
+}
+
+@keyframes dm-glowText {
+    0% {
+        text-shadow:
+            0 2px 15px rgba(201, 169, 110, 0.3),
+            0 0 40px rgba(201, 169, 110, 0.1);
+    }
+
+    100% {
+        text-shadow:
+            0 2px 30px rgba(201, 169, 110, 0.55),
+            0 0 80px rgba(201, 169, 110, 0.2),
+            0 0 120px rgba(201, 169, 110, 0.05);
+    }
+}
+
+/* ═══ DIVIDER ═══ */
+.dm-divider {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 8px 0 18px;
+    width: 70%;
+}
+
+.dm-divider-line {
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(201, 169, 110, 0.4), transparent);
+}
+
+.dm-divider-heart {
+    color: rgba(220, 80, 120, 0.6);
+    font-size: 0.9rem;
+    animation: dm-heartBeat 1.5s ease-in-out infinite;
+}
+
+@keyframes dm-heartBeat {
+
+    0%,
+    100% {
+        transform: scale(1);
+    }
+
+    15% {
+        transform: scale(1.3);
+    }
+
+    30% {
+        transform: scale(1);
+    }
+
+    45% {
+        transform: scale(1.2);
+    }
+
+    60% {
+        transform: scale(1);
+    }
+}
+
+/* ═══ LOVE MESSAGE ═══ */
+.dm-message {
+    position: relative;
+    padding: 15px 10px;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 1s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.dm-message.dm-visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.dm-quote-mark {
+    font-family: 'Great Vibes', cursive;
+    font-size: 3.5rem;
+    color: rgba(240, 160, 180, 0.25);
+    line-height: 0.6;
+    user-select: none;
+}
+
+.dm-quote-end {
+    text-align: right;
+    margin-top: -5px;
+}
+
+.dm-message-text {
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-size: 1.1rem;
+    color: rgba(250, 240, 245, 0.85);
+    line-height: 1.9;
+    letter-spacing: 0.5px;
+}
+
+.dm-highlight {
+    display: inline-block;
+    margin-top: 4px;
+    font-size: 1.25rem;
+    font-weight: 600;
+    font-style: normal;
+    background: linear-gradient(135deg, #f0a0b4, #e8d5a3, #f0a0b4);
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: dm-shimmer 3s linear infinite;
+}
+
+@keyframes dm-shimmer {
+    0% {
+        background-position: 0% center;
+    }
+
+    100% {
+        background-position: 200% center;
+    }
+}
+
+/* ═══ EXTRA SECTION ═══ */
+.dm-extra {
+    margin-top: 15px;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 1s cubic-bezier(0.16, 1, 0.3, 1) 0.2s;
+}
+
+.dm-extra.dm-visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.dm-hearts-row {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-bottom: 12px;
+    font-size: 1.3rem;
+}
+
+.dm-hearts-row span {
+    animation: dm-bounceHeart 2s ease-in-out infinite;
+}
+
+.dm-hearts-row span:nth-child(2) {
+    animation-delay: 0.3s;
+}
+
+.dm-hearts-row span:nth-child(3) {
+    animation-delay: 0.6s;
+}
+
+@keyframes dm-bounceHeart {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-6px);
+    }
+}
+
+.dm-extra-text {
+    font-family: 'Lora', serif;
+    font-style: italic;
+    font-size: 0.88rem;
+    color: rgba(245, 213, 205, 0.7);
+    line-height: 1.8;
+    margin-bottom: 18px;
+}
+
+.dm-signature {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.dm-forever {
+    font-family: 'Great Vibes', cursive;
+    font-size: 1.6rem;
+    color: rgba(232, 213, 163, 0.7);
+    text-shadow: 0 2px 15px rgba(201, 169, 110, 0.3);
+}
+
+.dm-heart-pulse {
+    font-size: 1.2rem;
+    animation: dm-heartBeat 1.5s ease-in-out infinite;
+}
+
+/* ═══ RESPONSIVE ═══ */
+
+@media (max-width: 600px) {
+    .dm-content {
+        width: 92%;
+        padding: 35px 22px;
+        border-radius: 20px;
+    }
+
+    .dm-flower-frame {
+        width: 170px;
+        height: 170px;
+    }
+
+    .dm-title-line1 {
+        font-size: 2.5rem;
+    }
+
+    .dm-title-line2 {
+        font-size: 2rem;
+    }
+
+    .dm-message-text {
+        font-size: 0.95rem;
+    }
+
+    .dm-highlight {
+        font-size: 1.1rem;
+    }
+
+    .dm-quote-mark {
+        font-size: 2.5rem;
+    }
+
+    .dm-forever {
+        font-size: 1.3rem;
+    }
+
+    .dm-extra-text {
+        font-size: 0.82rem;
+    }
+
+    .dm-date-badge span {
+        font-size: 0.65rem;
+        letter-spacing: 3px;
+    }
+}
+
+@media (max-width: 380px) {
+    .dm-content {
+        padding: 28px 18px;
+    }
+
+    .dm-flower-frame {
+        width: 140px;
+        height: 140px;
+    }
+
+    .dm-title-line1 {
+        font-size: 2rem;
+    }
+
+    .dm-title-line2 {
+        font-size: 1.7rem;
+    }
+
+    .dm-message-text {
+        font-size: 0.88rem;
+    }
+
+    .dm-highlight {
+        font-size: 1rem;
+    }
+}
+
+/* ═══ SCROLLBAR STYLING ═══ */
+.dm-container::-webkit-scrollbar {
+    width: 4px;
+}
+
+.dm-container::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.dm-container::-webkit-scrollbar-thumb {
+    background: rgba(201, 169, 110, 0.2);
+    border-radius: 10px;
+}
