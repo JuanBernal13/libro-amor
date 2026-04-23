@@ -10,7 +10,7 @@ export default function MusicPlayer() {
     if (!audio) return;
 
     audio.loop = true;
-    audio.volume = 0.75;
+    audio.volume = 0.4;
 
     const tryPlay = () => {
       const playPromise = audio.play();

@@ -37,6 +37,153 @@ body {
   user-select: none;
 }
 
+.cartica-shell {
+  min-height: 100vh;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 1.25rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.cartica-glow {
+  position: absolute;
+  width: 32rem;
+  height: 32rem;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.3;
+  pointer-events: none;
+}
+
+.cartica-glow-left {
+  background: rgba(201, 169, 110, 0.18);
+  top: -10rem;
+  left: -8rem;
+}
+
+.cartica-glow-right {
+  background: rgba(212, 160, 154, 0.18);
+  bottom: -12rem;
+  right: -8rem;
+}
+
+.cartica-card {
+  width: min(1100px, 100%);
+  position: relative;
+  z-index: 1;
+  background: rgba(250, 248, 245, 0.94);
+  border: 1px solid rgba(201, 169, 110, 0.25);
+  border-radius: 28px;
+  box-shadow: 0 25px 90px rgba(0, 0, 0, 0.28);
+  padding: 2rem;
+  backdrop-filter: blur(14px);
+}
+
+.cartica-header {
+  text-align: center;
+  margin-bottom: 1.75rem;
+}
+
+.cartica-kicker {
+  font-family: 'Playfair Display', serif;
+  color: var(--dusty-rose);
+  letter-spacing: 5px;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.cartica-header h1 {
+  font-family: 'Great Vibes', cursive;
+  color: var(--wine);
+  font-size: clamp(2.8rem, 6vw, 5rem);
+  font-weight: 400;
+  line-height: 1;
+}
+
+.cartica-divider {
+  width: 140px;
+  height: 1px;
+  margin: 1rem auto 0;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+}
+
+.cartica-layout {
+  display: grid;
+  grid-template-columns: minmax(260px, 360px) 1fr;
+  gap: 2rem;
+  align-items: center;
+}
+
+.cartica-image-frame {
+  position: relative;
+  border-radius: 24px;
+  overflow: hidden;
+  aspect-ratio: 4 / 5;
+  background: linear-gradient(135deg, var(--rose-cream), var(--parchment));
+  border: 2px dashed rgba(201, 169, 110, 0.35);
+}
+
+.cartica-image-frame img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.cartica-image-placeholder {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 1rem;
+  background: linear-gradient(180deg, transparent 0%, rgba(15, 13, 26, 0.35) 100%);
+  color: var(--gold-light);
+  font-family: 'Playfair Display', serif;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  font-size: 0.72rem;
+  text-align: center;
+}
+
+.cartica-text {
+  font-family: 'Lora', serif;
+  color: var(--warm-gray);
+  font-size: 1.05rem;
+  line-height: 2;
+  display: grid;
+  gap: 1rem;
+}
+
+.cartica-text p {
+  background: rgba(255, 255, 255, 0.46);
+  border-left: 3px solid rgba(201, 169, 110, 0.35);
+  padding: 0.85rem 1rem;
+  border-radius: 0 14px 14px 0;
+}
+
+.cartica-footer {
+  margin-top: 1.75rem;
+  text-align: center;
+  color: var(--dusty-rose);
+  font-family: 'Great Vibes', cursive;
+  font-size: 1.7rem;
+}
+
+@media (max-width: 900px) {
+  .cartica-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .cartica-card {
+    padding: 1.25rem;
+  }
+}
+
 .back-btn-global {
   position: fixed;
   top: 20px;

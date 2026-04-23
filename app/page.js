@@ -31,6 +31,11 @@ function HubInner() {
       </header>
 
       <section className="hub-grid">
+        <Link href="/cartica-lindi" className="hub-card">
+          <h2 className="hub-card-title">Cartica para mi amorcito</h2>
+          <p className="hub-card-desc">Mensajito especial para mi amorcito.</p>
+        </Link>
+
         <Link href={`/dibujos${editQuery}`} className="hub-card">
           <h2 className="hub-card-title">Dibujos</h2>
           <p className="hub-card-desc">Nuestros trazos y creaciones juntos.</p>
