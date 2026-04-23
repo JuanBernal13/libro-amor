@@ -2,7 +2,6 @@ import { getSQL, initDB } from "@/app/lib/db";
 import { validateEditKey, unauthorizedResponse } from "@/app/lib/auth";
 import { NextResponse } from "next/server";
 
-// GET /api/book — get book + entries
 export async function GET() {
     try {
         await initDB();
@@ -24,7 +23,6 @@ export async function GET() {
     }
 }
 
-// PUT /api/book — update book metadata (title, subtitle, dedication)
 export async function PUT(request) {
     if (!validateEditKey(request)) return unauthorizedResponse();
     try {

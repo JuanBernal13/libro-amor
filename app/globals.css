@@ -37,6 +37,34 @@ body {
   user-select: none;
 }
 
+.back-btn-global {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  z-index: 1000;
+  font-family: 'Playfair Display', serif;
+  color: var(--gold-light);
+  text-decoration: none;
+  font-size: 0.9rem;
+  letter-spacing: 2px;
+  background: rgba(44, 26, 46, 0.7);
+  padding: 10px 20px;
+  border-radius: 30px;
+  border: 1px solid rgba(201, 169, 110, 0.2);
+  backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.back-btn-global:hover {
+  background: var(--wine);
+  border-color: var(--gold);
+  transform: translateX(5px);
+  box-shadow: 0 0 20px rgba(201, 169, 110, 0.2);
+}
+
 /* ═══ PARTICLES ═══ */
 .particles {
   position: fixed;

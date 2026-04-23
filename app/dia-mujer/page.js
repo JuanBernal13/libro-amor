@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
+import Link from "next/link";
 import "./dia-mujer.css";
 
 export default function DiaMujer() {
@@ -49,6 +50,11 @@ export default function DiaMujer() {
         <div className="dm-container" ref={containerRef}>
             {/* Background animated gradient */}
             <div className="dm-bg-gradient" />
+
+            {/* Back button */}
+            <Link href="/" className="dm-back-btn">
+                ← Volver
+            </Link>
 
             {/* Floating hearts */}
             <div className="dm-hearts-layer">

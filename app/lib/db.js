@@ -34,6 +34,16 @@ export async function initDB() {
     )
    `;
 
+    await sql`
+    CREATE TABLE IF NOT EXISTS drawings (
+      id SERIAL PRIMARY KEY,
+      url TEXT NOT NULL,
+      title TEXT DEFAULT '',
+      description TEXT DEFAULT '',
+      created_at TIMESTAMP DEFAULT NOW()
+    )
+    `;
+
     // Migrations: add new columns to existing tables
     await sql`
       ALTER TABLE entries ADD COLUMN IF NOT EXISTS description TEXT DEFAULT ''

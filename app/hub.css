@@ -1,0 +1,155 @@
+.hub-container {
+  min-height: 100vh;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  position: relative;
+  z-index: 10;
+}
+
+.hub-header {
+  text-align: center;
+  margin-bottom: 4rem;
+  animation: fadeInDown 1.2s ease-out;
+}
+
+.hub-title {
+  font-family: 'Great Vibes', cursive;
+  font-size: 5rem;
+  color: var(--gold-light);
+  margin-bottom: 1rem;
+  text-shadow: 0 0 20px rgba(201, 169, 110, 0.4);
+}
+
+.hub-subtitle {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.2rem;
+  color: var(--blush);
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  opacity: 0.8;
+}
+
+.hub-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 3rem;
+  width: 100%;
+  max-width: 1000px;
+  animation: fadeInUp 1.5s ease-out;
+}
+
+.hub-card {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(201, 169, 110, 0.2);
+  border-radius: 20px;
+  padding: 2.5rem;
+  text-align: center;
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  text-decoration: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  color: inherit;
+}
+
+.hub-card:hover {
+  transform: translateY(-15px) scale(1.02);
+  background: rgba(255, 255, 255, 0.08);
+  border-color: var(--gold);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4), 0 0 20px rgba(201, 169, 110, 0.2);
+}
+
+.hub-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle at center, rgba(201, 169, 110, 0.1), transparent);
+  opacity: 0;
+  transition: opacity 0.4s;
+}
+
+.hub-card:hover::before {
+  opacity: 1;
+}
+
+.hub-card-title {
+  font-family: 'Great Vibes', cursive;
+  font-size: 2.8rem;
+  line-height: 1;
+  color: var(--gold-light);
+  margin-bottom: 0.4rem;
+  text-shadow: 0 0 14px rgba(201, 169, 110, 0.18);
+  letter-spacing: 0.5px;
+}
+
+.hub-card-desc {
+  font-family: 'Lora', serif;
+  font-size: 1rem;
+  color: var(--blush);
+  opacity: 0.7;
+}
+
+.memories-section {
+  margin-top: 5rem;
+  width: 100%;
+  max-width: 1200px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 2rem;
+  opacity: 0;
+  animation: fadeIn 2s ease-out forwards;
+  animation-delay: 1s;
+}
+
+.memory-sticker {
+  background: var(--parchment);
+  padding: 1rem 1.5rem;
+  border-radius: 5px;
+  font-family: 'Great Vibes', cursive;
+  font-size: 1.4rem;
+  color: var(--wine);
+  box-shadow: 3px 3px 10px rgba(0,0,0,0.2);
+  transform: rotate(calc(var(--rotation) * 1deg));
+  transition: transform 0.3s;
+  cursor: default;
+  border-left: 5px solid var(--gold);
+}
+
+.memory-sticker:hover {
+  transform: rotate(0deg) scale(1.1);
+  z-index: 20;
+}
+
+@keyframes fadeInDown {
+  from { opacity: 0; transform: translateY(-30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeIn {
+  to { opacity: 1; }
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+  .hub-title { font-size: 3.5rem; }
+  .hub-grid { gap: 1.5rem; padding: 0 1rem; }
+  .hub-card { padding: 1.5rem; }
+  .hub-card-title { font-size: 2.3rem; }
+}

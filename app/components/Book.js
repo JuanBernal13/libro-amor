@@ -402,7 +402,7 @@ function BookInner() {
             back: (
                 <div className="pg-content pg-end">
                     <p style={{ fontFamily: "'Great Vibes',cursive", fontSize: "1.3rem", color: "var(--dusty-rose)", opacity: .3 }}>
-                        Hecho con amor ✿
+                        Hecho con amor
                     </p>
                 </div>
             )
