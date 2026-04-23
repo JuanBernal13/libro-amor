@@ -1,4 +1,5 @@
 import "./globals.css";
+import MusicPlayer from "./components/MusicPlayer";
 
 export const metadata = {
   title: "Nuestro Libro de Recuerdos",
@@ -8,7 +9,10 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="es">
-      <body>{children}</body>
+      <body>
+        <MusicPlayer />
+        {children}
+      </body>
     </html>
   );
 }
