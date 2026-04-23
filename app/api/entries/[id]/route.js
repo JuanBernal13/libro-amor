@@ -10,7 +10,7 @@ export async function PUT(request, { params }) {
         const { id } = await params;
         const data = await request.json();
 
-        const { caption, description, title, body, date_text, photo_url } = data;
+        const { caption, description, title, body, date_text, photo_url, video_url } = data;
 
         await sql`
       UPDATE entries SET
@@ -20,6 +20,7 @@ export async function PUT(request, { params }) {
         body = COALESCE(${body ?? null}, body),
         date_text = COALESCE(${date_text ?? null}, date_text),
         photo_url = COALESCE(${photo_url ?? null}, photo_url),
+        video_url = COALESCE(${video_url ?? null}, video_url),
         updated_at = NOW()
       WHERE id = ${id}
     `;

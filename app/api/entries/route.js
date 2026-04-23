@@ -17,8 +17,8 @@ export async function POST(request) {
         const nextOrder = result[0].next_order;
 
         const rows = await sql`
-      INSERT INTO entries (book_id, chapter_order, photo_url, caption, title, body, date_text)
-      VALUES (${book_id}, ${nextOrder}, '', '', '', '', '')
+      INSERT INTO entries (book_id, chapter_order, photo_url, video_url, caption, title, body, date_text)
+      VALUES (${book_id}, ${nextOrder}, '', '', '', '', '', '')
       RETURNING *
     `;
 

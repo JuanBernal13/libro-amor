@@ -49,6 +49,10 @@ export async function initDB() {
       ALTER TABLE entries ADD COLUMN IF NOT EXISTS description TEXT DEFAULT ''
     `;
 
+    await sql`
+      ALTER TABLE entries ADD COLUMN IF NOT EXISTS video_url TEXT DEFAULT ''
+    `;
+
     // Ensure there's at least one book
     const books = await sql`SELECT id FROM book LIMIT 1`;
     if (books.length === 0) {

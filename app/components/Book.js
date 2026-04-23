@@ -125,8 +125,8 @@ function BookInner() {
         saveEntry(id, field, value);
     }
 
-    // ── Upload image ──
-    async function handleImageUpload(entryId, file) {
+    // ── Upload media ──
+    async function handleMediaUpload(entryId, file) {
         if (!file || !editMode) return;
         setUploading(entryId);
         try {
@@ -139,11 +139,15 @@ function BookInner() {
             });
             const data = await res.json();
             if (data.url) {
-                setEntries(prev => prev.map(e => e.id === entryId ? { ...e, photo_url: data.url } : e));
+                const isVideo = file.type.startsWith("video/");
+                const updates = isVideo
+                    ? { video_url: data.url, photo_url: "" }
+                    : { photo_url: data.url, video_url: "" };
+                setEntries(prev => prev.map(e => e.id === entryId ? { ...e, ...updates } : e));
                 await fetch(`/api/entries/${entryId}`, {
                     method: "PUT",
                     headers: authHeaders(),
-                    body: JSON.stringify({ photo_url: data.url }),
+                    body: JSON.stringify(updates),
                 });
             }
         } catch (e) {
@@ -279,6 +283,19 @@ function BookInner() {
                                         <span className="ph-icon">⏳</span>
                                         <span className="ph-label">Subiendo...</span>
                                     </div>
+                                ) : entry.video_url ? (
+                                    <video
+                                        src={entry.video_url}
+                                        controls
+                                        playsInline
+                                        style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
+                                        onClick={e => e.stopPropagation()}
+                                        onDoubleClick={e => {
+                                            if (!editMode) return;
+                                            e.stopPropagation();
+                                            fileInputRefs.current[entry.id]?.click();
+                                        }}
+                                    />
                                 ) : entry.photo_url ? (
                                     <img
                                         src={entry.photo_url}
@@ -311,9 +328,9 @@ function BookInner() {
                                     <input
                                         type="file"
                                         className="hidden-input"
-                                        accept="image/*"
+                                        accept="image/*,video/*"
                                         ref={el => { fileInputRefs.current[entry.id] = el; }}
-                                        onChange={e => handleImageUpload(entry.id, e.target.files[0])}
+                                        onChange={e => handleMediaUpload(entry.id, e.target.files[0])}
                                     />
                                 )}
                             </div>
