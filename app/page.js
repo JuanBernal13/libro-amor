@@ -4,6 +4,18 @@ import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import "./hub.css";
 
+function seededValue(seed) {
+  const x = Math.sin(seed) * 10000;
+  return x - Math.floor(x);
+}
+
+const particles = Array.from({ length: 20 }, (_, i) => ({
+  id: i,
+  left: seededValue(i + 1) * 100,
+  delay: seededValue(i + 21) * 8,
+  duration: 6 + seededValue(i + 41) * 6,
+}));
+
 function HubInner() {
   const searchParams = useSearchParams();
   const editKey = searchParams.get("edit");
@@ -12,14 +24,14 @@ function HubInner() {
   return (
     <main className="hub-container">
       <div className="particles">
-        {Array.from({ length: 20 }).map((_, i) => (
+        {particles.map((particle) => (
           <div
-            key={i}
-            className={`particle ${i % 2 === 0 ? 'petal' : 'star'}`}
+            key={particle.id}
+            className={`particle ${particle.id % 2 === 0 ? 'petal' : 'star'}`}
             style={{
-              left: `${Math.random() * 100}%`,
-              animationDelay: `${Math.random() * 8}s`,
-              animationDuration: `${6 + Math.random() * 6}s`
+              left: `${particle.left}%`,
+              animationDelay: `${particle.delay}s`,
+              animationDuration: `${particle.duration}s`
             }}
           />
         ))}

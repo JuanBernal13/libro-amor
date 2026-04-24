@@ -1,22 +1,16 @@
-import { getSQL, initDB } from "@/app/lib/db";
+import { ensureDefaultBook, pickDefined, prisma, toApiBook, toApiEntry } from "@/app/lib/db";
 import { validateEditKey, unauthorizedResponse } from "@/app/lib/auth";
 import { NextResponse } from "next/server";
 
 export async function GET() {
     try {
-        await initDB();
-        const sql = getSQL();
+        const book = await ensureDefaultBook();
+        const entries = await prisma.entry.findMany({
+            where: { bookId: book.id },
+            orderBy: { chapterOrder: "asc" },
+        });
 
-        const books = await sql`SELECT * FROM book LIMIT 1`;
-        const book = books[0] || { id: 1, title: "Nuestros Recuerdos", subtitle: "Un viaje a través del tiempo", dedication: "" };
-
-        const entries = await sql`
-      SELECT * FROM entries 
-      WHERE book_id = ${book.id} 
-      ORDER BY chapter_order ASC
-    `;
-
-        return NextResponse.json({ book, entries });
+        return NextResponse.json({ book: toApiBook(book), entries: entries.map(toApiEntry) });
     } catch (error) {
         console.error("GET /api/book error:", error);
         return NextResponse.json({ error: error.message }, { status: 500 });
@@ -26,17 +20,16 @@ export async function GET() {
 export async function PUT(request) {
     if (!validateEditKey(request)) return unauthorizedResponse();
     try {
-        const sql = getSQL();
-        const { title, subtitle, dedication } = await request.json();
+        const book = await ensureDefaultBook();
+        const data = pickDefined(await request.json(), [
+            ["title", "title"],
+            ["subtitle", "subtitle"],
+            ["dedication", "dedication"],
+        ]);
 
-        await sql`
-      UPDATE book SET 
-        title = COALESCE(${title}, title),
-        subtitle = COALESCE(${subtitle}, subtitle),
-        dedication = COALESCE(${dedication}, dedication),
-        updated_at = NOW()
-      WHERE id = 1
-    `;
+        if (Object.keys(data).length) {
+            await prisma.book.update({ where: { id: book.id }, data });
+        }
 
         return NextResponse.json({ success: true });
     } catch (error) {

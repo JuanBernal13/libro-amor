@@ -1,0 +1,47 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Book {
+  id         Int      @id @default(autoincrement())
+  title      String   @default("Nuestros Recuerdos")
+  subtitle   String   @default("Un viaje a través del tiempo")
+  dedication String   @default("")
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
+  entries    Entry[]
+
+  @@map("book")
+}
+
+model Entry {
+  id           Int      @id @default(autoincrement())
+  bookId       Int      @default(1) @map("book_id")
+  chapterOrder Int      @map("chapter_order")
+  photoUrl     String   @default("") @map("photo_url")
+  videoUrl     String   @default("") @map("video_url")
+  caption      String   @default("")
+  description  String   @default("")
+  title        String   @default("")
+  body         String   @default("")
+  dateText     String   @default("") @map("date_text")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+  book         Book     @relation(fields: [bookId], references: [id], onDelete: Cascade)
+
+  @@map("entries")
+}
+
+model Drawing {
+  id          Int      @id @default(autoincrement())
+  url         String
+  title       String   @default("")
+  description String   @default("")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  @@map("drawings")
+}

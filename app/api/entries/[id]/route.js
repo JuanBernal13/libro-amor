@@ -1,29 +1,26 @@
-import { getSQL } from "@/app/lib/db";
+import { pickDefined, prisma } from "@/app/lib/db";
 import { validateEditKey, unauthorizedResponse } from "@/app/lib/auth";
 import { NextResponse } from "next/server";
 
-// PUT /api/entries/[id] — update an entry
+// PUT /api/entries/[id] - update an entry
 export async function PUT(request, { params }) {
     if (!validateEditKey(request)) return unauthorizedResponse();
     try {
-        const sql = getSQL();
         const { id } = await params;
-        const data = await request.json();
+        const entryId = Number(id);
+        const data = pickDefined(await request.json(), [
+            ["caption", "caption"],
+            ["description", "description"],
+            ["title", "title"],
+            ["body", "body"],
+            ["date_text", "dateText"],
+            ["photo_url", "photoUrl"],
+            ["video_url", "videoUrl"],
+        ]);
 
-        const { caption, description, title, body, date_text, photo_url, video_url } = data;
-
-        await sql`
-      UPDATE entries SET
-        caption = COALESCE(${caption ?? null}, caption),
-        description = COALESCE(${description ?? null}, description),
-        title = COALESCE(${title ?? null}, title),
-        body = COALESCE(${body ?? null}, body),
-        date_text = COALESCE(${date_text ?? null}, date_text),
-        photo_url = COALESCE(${photo_url ?? null}, photo_url),
-        video_url = COALESCE(${video_url ?? null}, video_url),
-        updated_at = NOW()
-      WHERE id = ${id}
-    `;
+        if (Object.keys(data).length) {
+            await prisma.entry.update({ where: { id: entryId }, data });
+        }
 
         return NextResponse.json({ success: true });
     } catch (error) {
@@ -32,22 +29,34 @@ export async function PUT(request, { params }) {
     }
 }
 
-// DELETE /api/entries/[id] — delete an entry
+// DELETE /api/entries/[id] - delete an entry
 export async function DELETE(request, { params }) {
     if (!validateEditKey(request)) return unauthorizedResponse();
     try {
-        const sql = getSQL();
         const { id } = await params;
+        const entryId = Number(id);
 
-        await sql`DELETE FROM entries WHERE id = ${id}`;
+        await prisma.$transaction(async (tx) => {
+            const deleted = await tx.entry.delete({
+                where: { id: entryId },
+                select: { bookId: true },
+            });
 
-        // Re-order remaining entries
-        const remaining = await sql`
-      SELECT id FROM entries WHERE book_id = 1 ORDER BY chapter_order ASC
-    `;
-        for (let i = 0; i < remaining.length; i++) {
-            await sql`UPDATE entries SET chapter_order = ${i + 1} WHERE id = ${remaining[i].id}`;
-        }
+            const remaining = await tx.entry.findMany({
+                where: { bookId: deleted.bookId },
+                orderBy: { chapterOrder: "asc" },
+                select: { id: true },
+            });
+
+            await Promise.all(
+                remaining.map((entry, index) =>
+                    tx.entry.update({
+                        where: { id: entry.id },
+                        data: { chapterOrder: index + 1 },
+                    })
+                )
+            );
+        });
 
         return NextResponse.json({ success: true });
     } catch (error) {

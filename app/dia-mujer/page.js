@@ -3,6 +3,38 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import "./dia-mujer.css";
 
+function seededValue(seed) {
+    const x = Math.sin(seed) * 10000;
+    return x - Math.floor(x);
+}
+
+const hearts = Array.from({ length: 25 }, (_, i) => ({
+    id: i,
+    left: seededValue(i + 1) * 100,
+    delay: seededValue(i + 31) * 8,
+    duration: 6 + seededValue(i + 61) * 8,
+    size: 10 + seededValue(i + 91) * 22,
+    opacity: 0.15 + seededValue(i + 121) * 0.4,
+}));
+
+const sparkles = Array.from({ length: 40 }, (_, i) => ({
+    id: i,
+    left: seededValue(i + 151) * 100,
+    top: seededValue(i + 191) * 100,
+    delay: seededValue(i + 231) * 5,
+    duration: 2 + seededValue(i + 271) * 3,
+    size: 2 + seededValue(i + 311) * 4,
+}));
+
+const petals = Array.from({ length: 20 }, (_, i) => ({
+    id: i,
+    left: seededValue(i + 351) * 100,
+    delay: seededValue(i + 381) * 10,
+    duration: 8 + seededValue(i + 411) * 7,
+    size: 8 + seededValue(i + 441) * 14,
+    rotation: seededValue(i + 471) * 360,
+}));
+
 export default function DiaMujer() {
     const [showContent, setShowContent] = useState(false);
     const [showMessage, setShowMessage] = useState(false);
@@ -15,36 +47,6 @@ export default function DiaMujer() {
         setTimeout(() => setShowMessage(true), 1800);
         setTimeout(() => setShowExtra(true), 3200);
     }, []);
-
-    // Generate floating hearts
-    const hearts = Array.from({ length: 25 }, (_, i) => ({
-        id: i,
-        left: Math.random() * 100,
-        delay: Math.random() * 8,
-        duration: 6 + Math.random() * 8,
-        size: 10 + Math.random() * 22,
-        opacity: 0.15 + Math.random() * 0.4,
-    }));
-
-    // Generate sparkle particles
-    const sparkles = Array.from({ length: 40 }, (_, i) => ({
-        id: i,
-        left: Math.random() * 100,
-        top: Math.random() * 100,
-        delay: Math.random() * 5,
-        duration: 2 + Math.random() * 3,
-        size: 2 + Math.random() * 4,
-    }));
-
-    // Generate petals
-    const petals = Array.from({ length: 20 }, (_, i) => ({
-        id: i,
-        left: Math.random() * 100,
-        delay: Math.random() * 10,
-        duration: 8 + Math.random() * 7,
-        size: 8 + Math.random() * 14,
-        rotation: Math.random() * 360,
-    }));
 
     return (
         <div className="dm-container" ref={containerRef}>
@@ -142,13 +144,13 @@ export default function DiaMujer() {
 
                 {/* Love message */}
                 <div className={`dm-message ${showMessage ? "dm-visible" : ""}`}>
-                    <div className="dm-quote-mark">"</div>
+                    <div className="dm-quote-mark">&ldquo;</div>
                     <p className="dm-message-text">
                         Feliz día de la mujer mi amor.
                         <br />
                         <span className="dm-highlight">Te amo mucho mucho mucho</span>
                     </p>
-                    <div className="dm-quote-mark dm-quote-end">"</div>
+                    <div className="dm-quote-mark dm-quote-end">&rdquo;</div>
                 </div>
 
                 {/* Extra love section */}

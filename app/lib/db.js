@@ -1,63 +1,71 @@
-import { neon } from "@neondatabase/serverless";
+import { PrismaPg } from "@prisma/adapter-pg";
+import { PrismaClient } from "@prisma/client";
 
-export function getSQL() {
-    return neon(process.env.DATABASE_URL);
+const globalForPrisma = globalThis;
+
+const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL });
+
+export const prisma = globalForPrisma.prisma || new PrismaClient({ adapter });
+
+if (process.env.NODE_ENV !== "production") {
+    globalForPrisma.prisma = prisma;
 }
 
-export async function initDB() {
-    const sql = getSQL();
+export function toApiBook(book) {
+    return {
+        id: book.id,
+        title: book.title,
+        subtitle: book.subtitle,
+        dedication: book.dedication,
+        created_at: book.createdAt,
+        updated_at: book.updatedAt,
+    };
+}
 
-    await sql`
-    CREATE TABLE IF NOT EXISTS book (
-      id SERIAL PRIMARY KEY,
-      title TEXT DEFAULT 'Nuestros Recuerdos',
-      subtitle TEXT DEFAULT 'Un viaje a través del tiempo',
-      dedication TEXT DEFAULT '',
-      created_at TIMESTAMP DEFAULT NOW(),
-      updated_at TIMESTAMP DEFAULT NOW()
-    )
-  `;
+export function toApiEntry(entry) {
+    return {
+        id: entry.id,
+        book_id: entry.bookId,
+        chapter_order: entry.chapterOrder,
+        photo_url: entry.photoUrl,
+        video_url: entry.videoUrl,
+        caption: entry.caption,
+        description: entry.description,
+        title: entry.title,
+        body: entry.body,
+        date_text: entry.dateText,
+        created_at: entry.createdAt,
+        updated_at: entry.updatedAt,
+    };
+}
 
-    await sql`
-    CREATE TABLE IF NOT EXISTS entries (
-      id SERIAL PRIMARY KEY,
-      book_id INTEGER DEFAULT 1,
-      chapter_order INTEGER NOT NULL,
-      photo_url TEXT DEFAULT '',
-      caption TEXT DEFAULT '',
-      description TEXT DEFAULT '',
-      title TEXT DEFAULT '',
-      body TEXT DEFAULT '',
-      date_text TEXT DEFAULT '',
-      created_at TIMESTAMP DEFAULT NOW(),
-      updated_at TIMESTAMP DEFAULT NOW()
-    )
-   `;
+export function toApiDrawing(drawing) {
+    return {
+        id: drawing.id,
+        url: drawing.url,
+        title: drawing.title,
+        description: drawing.description,
+        created_at: drawing.createdAt,
+    };
+}
 
-    await sql`
-    CREATE TABLE IF NOT EXISTS drawings (
-      id SERIAL PRIMARY KEY,
-      url TEXT NOT NULL,
-      title TEXT DEFAULT '',
-      description TEXT DEFAULT '',
-      created_at TIMESTAMP DEFAULT NOW()
-    )
-    `;
+export function pickDefined(source, fields) {
+    return Object.fromEntries(
+        fields
+            .filter(([apiField]) => source[apiField] !== undefined && source[apiField] !== null)
+            .map(([apiField, prismaField]) => [prismaField, source[apiField]])
+    );
+}
 
-    // Migrations: add new columns to existing tables
-    await sql`
-      ALTER TABLE entries ADD COLUMN IF NOT EXISTS description TEXT DEFAULT ''
-    `;
+export async function ensureDefaultBook() {
+    const book = await prisma.book.findFirst({ orderBy: { id: "asc" } });
+    if (book) return book;
 
-    await sql`
-      ALTER TABLE entries ADD COLUMN IF NOT EXISTS video_url TEXT DEFAULT ''
-    `;
-
-    // Ensure there's at least one book
-    const books = await sql`SELECT id FROM book LIMIT 1`;
-    if (books.length === 0) {
-        await sql`INSERT INTO book (title, subtitle, dedication) VALUES ('Nuestros Recuerdos', 'Un viaje a través del tiempo', '')`;
-    }
-
-    return sql;
+    return prisma.book.create({
+        data: {
+            title: "Nuestros Recuerdos",
+            subtitle: "Un viaje a través del tiempo",
+            dedication: "",
+        },
+    });
 }
